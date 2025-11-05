@@ -12,8 +12,12 @@ class WebSocketService extends ChangeNotifier {
   StreamSubscription? _subscription;
   String? _currentIncubatorId;
   bool _isConnected = false;
+  SensorData? _latestSensorData;
+  Alert? _latestAlert;
 
   bool get isConnected => _isConnected;
+  SensorData? get latestSensorData => _latestSensorData;
+  Alert? get latestAlert => _latestAlert;
 
   Future<void> connect(String incubatorId) async {
     if (_channel != null && _currentIncubatorId == incubatorId && _isConnected) {
@@ -61,12 +65,12 @@ class WebSocketService extends ChangeNotifier {
     
     switch (type) {
       case 'sensor_update':
-        final sensorData = SensorData.fromJson(data['data'] as Map<String, dynamic>);
+        _latestSensorData = SensorData.fromJson(data['data'] as Map<String, dynamic>);
         notifyListeners();
         break;
       case 'alert':
         final alertJson = data['alert'] as Map<String, dynamic>;
-        // Alert will be handled by the screen listening to this service
+        _latestAlert = Alert.fromJson(alertJson);
         notifyListeners();
         break;
       case 'config_update':

@@ -49,8 +49,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       body: Consumer2<IncubatorService, WebSocketService>(
         builder: (context, service, ws, child) {
-          final sensorData = service.latestSensorData;
+          // Use WebSocket data if available, otherwise fall back to service
+          final sensorData = ws.latestSensorData ?? service.latestSensorData;
           final config = service.config;
+          
+          // Update service with WebSocket data
+          if (ws.latestSensorData != null && ws.latestSensorData != service.latestSensorData) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              service.updateSensorData(ws.latestSensorData!);
+            });
+          }
+          
+          // Handle alerts from WebSocket
+          if (ws.latestAlert != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              service.addAlert(ws.latestAlert!);
+            });
+          }
 
           if (sensorData == null) {
             return const Center(

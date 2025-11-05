@@ -215,12 +215,18 @@ async def check_anomalies(sensor_data: SensorData, db: Session):
             message=f"Temperature sensors show {temp_spread:.1f}°C difference"
         )
         db.add(alert)
+        db.commit()
+        db.refresh(alert)
         await manager.broadcast(sensor_data.incubator_id, {
             "type": "alert",
             "alert": {
-                "alert_type": "sensor_mismatch",
-                "severity": "warning",
-                "message": alert.message
+                "id": alert.id,
+                "incubator_id": alert.incubator_id,
+                "alert_type": alert.alert_type,
+                "severity": alert.severity,
+                "message": alert.message,
+                "resolved": alert.resolved,
+                "created_at": alert.created_at.isoformat()
             }
         })
     
@@ -233,12 +239,18 @@ async def check_anomalies(sensor_data: SensorData, db: Session):
             message=f"Temperature dropped to {avg_temp:.1f}°C (target: {incubator.target_temp}°C)"
         )
         db.add(alert)
+        db.commit()
+        db.refresh(alert)
         await manager.broadcast(sensor_data.incubator_id, {
             "type": "alert",
             "alert": {
-                "alert_type": "temp_low",
-                "severity": "critical",
-                "message": alert.message
+                "id": alert.id,
+                "incubator_id": alert.incubator_id,
+                "alert_type": alert.alert_type,
+                "severity": alert.severity,
+                "message": alert.message,
+                "resolved": alert.resolved,
+                "created_at": alert.created_at.isoformat()
             }
         })
     elif avg_temp > incubator.target_temp + 2.0:
@@ -249,12 +261,18 @@ async def check_anomalies(sensor_data: SensorData, db: Session):
             message=f"Temperature rose to {avg_temp:.1f}°C (target: {incubator.target_temp}°C)"
         )
         db.add(alert)
+        db.commit()
+        db.refresh(alert)
         await manager.broadcast(sensor_data.incubator_id, {
             "type": "alert",
             "alert": {
-                "alert_type": "temp_high",
-                "severity": "critical",
-                "message": alert.message
+                "id": alert.id,
+                "incubator_id": alert.incubator_id,
+                "alert_type": alert.alert_type,
+                "severity": alert.severity,
+                "message": alert.message,
+                "resolved": alert.resolved,
+                "created_at": alert.created_at.isoformat()
             }
         })
     
@@ -267,12 +285,18 @@ async def check_anomalies(sensor_data: SensorData, db: Session):
             message=f"Humidity at {sensor_data.humidity_sht31:.1f}% (target: {incubator.target_humidity}%)"
         )
         db.add(alert)
+        db.commit()
+        db.refresh(alert)
         await manager.broadcast(sensor_data.incubator_id, {
             "type": "alert",
             "alert": {
-                "alert_type": "humidity_low",
-                "severity": "warning",
-                "message": alert.message
+                "id": alert.id,
+                "incubator_id": alert.incubator_id,
+                "alert_type": alert.alert_type,
+                "severity": alert.severity,
+                "message": alert.message,
+                "resolved": alert.resolved,
+                "created_at": alert.created_at.isoformat()
             }
         })
     elif sensor_data.humidity_sht31 > incubator.target_humidity + 15:
@@ -283,16 +307,20 @@ async def check_anomalies(sensor_data: SensorData, db: Session):
             message=f"Humidity at {sensor_data.humidity_sht31:.1f}% (target: {incubator.target_humidity}%)"
         )
         db.add(alert)
+        db.commit()
+        db.refresh(alert)
         await manager.broadcast(sensor_data.incubator_id, {
             "type": "alert",
             "alert": {
-                "alert_type": "humidity_high",
-                "severity": "warning",
-                "message": alert.message
+                "id": alert.id,
+                "incubator_id": alert.incubator_id,
+                "alert_type": alert.alert_type,
+                "severity": alert.severity,
+                "message": alert.message,
+                "resolved": alert.resolved,
+                "created_at": alert.created_at.isoformat()
             }
         })
-    
-    db.commit()
 
 # API Endpoints
 
