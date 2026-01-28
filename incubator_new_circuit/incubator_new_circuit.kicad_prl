@@ -59,7 +59,7 @@
     "ssh_key": ""
   },
   "meta": {
-    "filename": "incubator-pcb-design.kicad_prl",
+    "filename": "incubator_new_circuit.kicad_prl",
     "version": 5
   },
   "net_inspector_panel": {

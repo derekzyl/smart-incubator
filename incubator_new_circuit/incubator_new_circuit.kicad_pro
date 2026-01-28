@@ -451,7 +451,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "incubator-pcb-design.kicad_pro",
+    "filename": "incubator_new_circuit.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -598,7 +598,7 @@
     },
     "net_format_name": "",
     "page_layout_descr_file": "",
-    "plot_directory": "",
+    "plot_directory": "./",
     "space_save_all_events": true,
     "spice_current_sheet_as_root": false,
     "spice_external_command": "spice \"%I\"",
@@ -609,6 +609,11 @@
     "subpart_first_id": 65,
     "subpart_id_separator": 0
   },
-  "sheets": [],
+  "sheets": [
+    [
+      "98b535a2-07d0-4dae-ae08-2a189bcbfe55",
+      "Root"
+    ]
+  ],
   "text_variables": {}
 }
