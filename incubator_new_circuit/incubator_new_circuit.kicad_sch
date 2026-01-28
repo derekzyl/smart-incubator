@@ -1283,357 +1283,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "PCM_Diode_Bridge_AKL:D_Bridge_Generic_AC+AC-"
-			(pin_names
-				(offset 1.016)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "D"
-				(at 5.08 7.62 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" "D_Bridge_Generic_AC+AC-"
-				(at 5.08 5.08 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" ""
-				(at 10.16 8.89 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" ""
-				(at 10.16 8.89 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Diode bridge, Generic symbol, Alternate KiCAD Library"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "diode bridge rectifier generic"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "D_Bridge_Generic_AC+AC-_0_1"
-				(polyline
-					(pts
-						(xy -5.08 0) (xy -3.81 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center -3.81 0)
-					(radius 0.1778)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.54 -1.27) (xy -1.905 -3.175) (xy -0.635 -1.905) (xy -2.54 -1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.905 3.175) (xy -0.635 1.905)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.905 -0.635) (xy -3.175 -1.905)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 2.54) (xy -1.905 0.635) (xy -3.175 1.905) (xy -1.27 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 5.08) (xy 0 3.81)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 3.81) (xy -3.81 0) (xy 0 -3.81) (xy 3.81 0) (xy 0 3.81)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center 0 0)
-					(radius 4.572)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 -5.08) (xy 0 -3.81)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 2.54) (xy 3.175 1.905) (xy 1.905 0.635) (xy 1.27 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.905 3.175) (xy 0.635 1.905)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.54 -1.27) (xy 0.635 -1.905) (xy 1.905 -3.175) (xy 2.54 -1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 3.175 -1.905) (xy 1.905 -0.635)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 5.08 0) (xy 3.81 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "D_Bridge_Generic_AC+AC-_1_1"
-				(circle
-					(center 0 3.81)
-					(radius 0.1778)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(circle
-					(center 0 -3.81)
-					(radius 0.1778)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(circle
-					(center 3.81 0)
-					(radius 0.1778)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(pin passive line
-					(at -7.62 0 0)
-					(length 2.54)
-					(name "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 7.62 270)
-					(length 2.54)
-					(name "+"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 -7.62 90)
-					(length 2.54)
-					(name "-"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 0 180)
-					(length 2.54)
-					(name "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "PCM_Espressif:ESP32-C6-DevKitC-1"
 			(pin_names
 				(offset 1.016)
@@ -4360,542 +4009,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Simulation_SPICE:VSIN"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0.0254)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "V"
-				(at 2.54 2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" "VSIN"
-				(at 2.54 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#sec_Independent_Sources_for"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Voltage source, sinusoidal"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Sim.Pins" "1=+ 2=-"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Sim.Params" "dc=0 ampl=1 f=1k ac=1"
-				(at 2.54 -2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Sim.Type" "SIN"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Sim.Device" "V"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "simulation ac vac"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "VSIN_0_0"
-				(arc
-					(start -1.27 0)
-					(mid -0.635 0.6323)
-					(end 0 0)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.27 0)
-					(mid 0.635 -0.6323)
-					(end 0 0)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(text "+"
-					(at 0 1.905 0)
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(symbol "VSIN_0_1"
-				(circle
-					(center 0 0)
-					(radius 2.54)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-			)
-			(symbol "VSIN_1_1"
-				(pin passive line
-					(at 0 5.08 270)
-					(length 2.54)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 -5.08 90)
-					(length 2.54)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "Transformer:TEZ16.0-D-1"
-			(pin_names
-				(offset 0.0254)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "TR"
-				(at 0 6.35 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "TEZ16.0-D-1"
-				(at 0 -6.35 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" "Transformer_THT:Transformer_Breve_TEZ-47x57"
-				(at 0 -8.89 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-						(italic yes)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "http://www.breve.pl/pdf/ANG/TEZ_ang.pdf"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "TEZ16.0/D/x, 16VA, Single Secondary, Cast Resin Transformer, PCB"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "16VA PCB Transformer Single Secondary"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "Transformer*Breve*TEZ*47x57*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "TEZ16.0-D-1_0_1"
-				(circle
-					(center -2.032 4.572)
-					(radius 0.127)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.524 4.572)
-					(mid -0.7653 3.81)
-					(end -1.524 3.048)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.524 3.048)
-					(mid -0.7653 2.286)
-					(end -1.524 1.524)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.524 1.524)
-					(mid -0.7653 0.762)
-					(end -1.524 0)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.524 0)
-					(mid -0.7653 -0.762)
-					(end -1.524 -1.524)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.524 -1.524)
-					(mid -0.7653 -2.286)
-					(end -1.524 -3.048)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -1.524 -3.048)
-					(mid -0.7653 -3.81)
-					(end -1.524 -4.572)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.524 4.572) (xy -1.524 5.08) (xy -2.54 5.08)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.524 -4.572) (xy -1.524 -5.08) (xy -2.54 -5.08)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -0.254 5.334)
-					(end 0.254 -5.334)
-					(stroke
-						(width 0.0254)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.524 3.048) (xy 1.524 5.08) (xy 2.54 5.08)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.524 1.524)
-					(mid 0.7653 2.286)
-					(end 1.524 3.048)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.524 0)
-					(mid 0.7653 0.762)
-					(end 1.524 1.524)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.524 -1.524)
-					(mid 0.7653 -0.762)
-					(end 1.524 0)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 1.524 -3.048)
-					(mid 0.7653 -2.286)
-					(end 1.524 -1.524)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center 2.032 3.556)
-					(radius 0.127)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.54 -5.08) (xy 1.524 -5.08) (xy 1.524 -3.048)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "TEZ16.0-D-1_1_1"
-				(pin passive line
-					(at -5.08 5.08 0)
-					(length 2.54)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -5.08 0)
-					(length 2.54)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "7"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 5.08 5.08 180)
-					(length 2.54)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "9"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 5.08 -5.08 180)
-					(length 2.54)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "13"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "power:GND"
 			(power)
 			(pin_numbers
@@ -5063,12 +4176,6 @@
 		(uuid "22f9ed30-ccf3-42f9-977e-e8ed8a141101")
 	)
 	(junction
-		(at 74.93 21.59)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "2778376a-a207-402a-b35a-62c0cb4bd00f")
-	)
-	(junction
 		(at 163.83 45.72)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5129,12 +4236,6 @@
 		(uuid "75998f45-a579-4bd4-a4ae-2a6cd5e9e6f6")
 	)
 	(junction
-		(at 58.42 35.56)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "7b0a7a14-0574-420a-abf7-39a8139fe5d6")
-	)
-	(junction
 		(at 129.54 156.21)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5145,12 +4246,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "7ba24dbb-adfe-42d3-b3f1-7cef0e8f6183")
-	)
-	(junction
-		(at 58.42 20.32)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "842598b7-bbff-4d80-802c-22a252dbd84a")
 	)
 	(junction
 		(at 149.86 22.86)
@@ -5348,16 +4443,6 @@
 	)
 	(wire
 		(pts
-			(xy 74.93 20.32) (xy 74.93 21.59)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "05125726-c128-4b98-8c5c-1993060017be")
-	)
-	(wire
-		(pts
 			(xy 80.01 129.54) (xy 80.01 130.81)
 		)
 		(stroke
@@ -5385,26 +4470,6 @@
 			(type default)
 		)
 		(uuid "0b038faf-e009-47a3-9657-73ead7418378")
-	)
-	(wire
-		(pts
-			(xy 58.42 20.32) (xy 74.93 20.32)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0b37ce61-b6de-498f-a7b3-7d06354c76d1")
-	)
-	(wire
-		(pts
-			(xy 45.72 20.32) (xy 58.42 20.32)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0bc3f8c9-569c-4e8e-b097-21944689a644")
 	)
 	(wire
 		(pts
@@ -5478,16 +4543,6 @@
 	)
 	(wire
 		(pts
-			(xy 58.42 35.56) (xy 69.85 35.56)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "15994867-2858-4083-8d71-6ca7c7376fc5")
-	)
-	(wire
-		(pts
 			(xy 43.18 114.3) (xy 25.4 114.3)
 		)
 		(stroke
@@ -5505,6 +4560,16 @@
 			(type default)
 		)
 		(uuid "24323725-2be3-4e9a-8dd1-a96dcf623768")
+	)
+	(wire
+		(pts
+			(xy 78.74 21.59) (xy 80.01 21.59)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "24b009b9-23a3-4086-b101-844622632605")
 	)
 	(wire
 		(pts
@@ -5678,16 +4743,6 @@
 	)
 	(wire
 		(pts
-			(xy 53.34 27.94) (xy 53.34 38.1)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4093ae74-5823-42f0-877f-2602927f63f5")
-	)
-	(wire
-		(pts
 			(xy 87.63 133.35) (xy 113.03 133.35)
 		)
 		(stroke
@@ -5755,16 +4810,6 @@
 			(type default)
 		)
 		(uuid "47f8fd51-6b78-4a0c-804e-9294cee9c20e")
-	)
-	(wire
-		(pts
-			(xy 38.1 22.86) (xy 38.1 27.94)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "49a4d337-d9a9-49e0-9917-6550ebd2bafd")
 	)
 	(wire
 		(pts
@@ -6058,26 +5103,6 @@
 	)
 	(wire
 		(pts
-			(xy 45.72 35.56) (xy 58.42 35.56)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8241d074-6c14-4d45-948c-e1b0669bf03f")
-	)
-	(wire
-		(pts
-			(xy 80.01 21.59) (xy 74.93 21.59)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "82985971-8e46-477d-ab28-d4348867d4ce")
-	)
-	(wire
-		(pts
 			(xy 124.46 106.68) (xy 121.92 106.68)
 		)
 		(stroke
@@ -6188,33 +5213,13 @@
 	)
 	(wire
 		(pts
-			(xy 36.83 38.1) (xy 36.83 33.02)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "91107c0e-78f1-4838-adcf-b41440acb04c")
-	)
-	(wire
-		(pts
-			(xy 74.93 21.59) (xy 74.93 38.1)
+			(xy 74.93 20.32) (xy 74.93 38.1)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "9163445b-8ed6-40d5-b834-61339c09d3ed")
-	)
-	(wire
-		(pts
-			(xy 69.85 29.21) (xy 80.01 29.21)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "934f9087-a69a-448b-9c59-44f6a13041ac")
 	)
 	(wire
 		(pts
@@ -6248,6 +5253,16 @@
 	)
 	(wire
 		(pts
+			(xy 74.93 20.32) (xy 78.74 20.32)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9c03ed26-307f-4dec-86af-f202723b7c40")
+	)
+	(wire
+		(pts
 			(xy 139.7 156.21) (xy 139.7 167.64)
 		)
 		(stroke
@@ -6265,16 +5280,6 @@
 			(type default)
 		)
 		(uuid "9f0ded5b-8455-4331-b1c4-f239994bb5fa")
-	)
-	(wire
-		(pts
-			(xy 69.85 35.56) (xy 69.85 29.21)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a2205eb1-7b31-4087-b819-db13b791037d")
 	)
 	(wire
 		(pts
@@ -6318,16 +5323,6 @@
 	)
 	(wire
 		(pts
-			(xy 58.42 30.48) (xy 58.42 35.56)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a5fb88a2-1b5d-415c-a304-99681018de51")
-	)
-	(wire
-		(pts
 			(xy 43.18 104.14) (xy 43.18 101.6)
 		)
 		(stroke
@@ -6365,16 +5360,6 @@
 			(type default)
 		)
 		(uuid "ab66bd80-6d35-4909-86a4-f3209d5e3cb0")
-	)
-	(wire
-		(pts
-			(xy 36.83 22.86) (xy 38.1 22.86)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ae7f60f7-e2f1-4161-83f1-56ded3f599b0")
 	)
 	(wire
 		(pts
@@ -6425,6 +5410,16 @@
 			(type default)
 		)
 		(uuid "b76e1b4c-bd9a-46e3-b9f7-462ba59d1f27")
+	)
+	(wire
+		(pts
+			(xy 78.74 20.32) (xy 78.74 21.59)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b81a969e-27f4-426e-8a26-5f853f60427e")
 	)
 	(wire
 		(pts
@@ -6818,16 +5813,6 @@
 	)
 	(wire
 		(pts
-			(xy 53.34 38.1) (xy 36.83 38.1)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f464c086-29e7-4e37-9c01-94a9bf12c4a8")
-	)
-	(wire
-		(pts
 			(xy 88.9 160.02) (xy 115.57 160.02)
 		)
 		(stroke
@@ -6885,16 +5870,6 @@
 			(type default)
 		)
 		(uuid "fb4846e2-ade7-4e40-a9b5-a3555776731e")
-	)
-	(wire
-		(pts
-			(xy 58.42 20.32) (xy 58.42 22.86)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "fbdc9bee-0040-4090-9d04-288425058536")
 	)
 	(wire
 		(pts
@@ -7642,81 +6617,6 @@
 			(project "best-phase-circuitry"
 				(path "/98b535a2-07d0-4dae-ae08-2a189bcbfe55"
 					(reference "D2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "PCM_Diode_Bridge_AKL:D_Bridge_Generic_AC+AC-")
-		(at 45.72 27.94 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "394316f3-fa94-4f57-978a-3929dae017e3")
-		(property "Reference" "D4"
-			(at 53.34 24.0598 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "D_Bridge_Generic_AC+AC-"
-			(at 64.77 24.0598 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" ""
-			(at 55.88 19.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 55.88 19.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Diode bridge, Generic symbol, Alternate KiCAD Library"
-			(at 45.72 27.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "dbaf92b4-9bf9-42cf-937b-7550ecb92cd9")
-		)
-		(pin "3"
-			(uuid "6f383e16-4a28-4e6b-99d5-1ae4596e7010")
-		)
-		(pin "4"
-			(uuid "7cbcfb5f-caeb-4324-a7a9-ef416ad7dc16")
-		)
-		(pin "2"
-			(uuid "9bea0c51-285f-4462-b61b-7c9bdde25f07")
-		)
-		(instances
-			(project ""
-				(path "/98b535a2-07d0-4dae-ae08-2a189bcbfe55"
-					(reference "D4")
 					(unit 1)
 				)
 			)
@@ -8501,81 +7401,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Transformer:TEZ16.0-D-1")
-		(at 31.75 27.94 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "80c2c8f6-2d9a-48c2-8338-5df332ee0777")
-		(property "Reference" "TR1"
-			(at 31.7881 17.78 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "TEZ16.0-D-1"
-			(at 31.7881 20.32 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Transformer_THT:Transformer_Breve_TEZ-47x57"
-			(at 31.75 36.83 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-					(italic yes)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "http://www.breve.pl/pdf/ANG/TEZ_ang.pdf"
-			(at 31.75 27.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "TEZ16.0/D/x, 16VA, Single Secondary, Cast Resin Transformer, PCB"
-			(at 31.75 27.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "9a50a349-2822-46b1-9f5f-1afb0051584b")
-		)
-		(pin "7"
-			(uuid "08ee2b58-f240-4108-9f23-7c967b0bd9b2")
-		)
-		(pin "13"
-			(uuid "9e9fe813-39b7-4377-b080-6c8ee225cd5e")
-		)
-		(pin "9"
-			(uuid "4d071297-3e79-4a5a-b1c9-196d65b02d77")
-		)
-		(instances
-			(project ""
-				(path "/98b535a2-07d0-4dae-ae08-2a189bcbfe55"
-					(reference "TR1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "PCM_SL_Resistors:Resistor")
 		(at 135.89 31.75 90)
 		(unit 1)
@@ -8640,113 +7465,6 @@
 			(project ""
 				(path "/98b535a2-07d0-4dae-ae08-2a189bcbfe55"
 					(reference "R1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Simulation_SPICE:VSIN")
-		(at 26.67 27.94 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "9137f849-52e6-414a-8685-37b7a248faf8")
-		(property "Reference" "V4"
-			(at 30.48 25.2701 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "VSIN"
-			(at 30.48 27.8101 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 26.67 27.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#sec_Independent_Sources_for"
-			(at 26.67 27.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Voltage source, sinusoidal"
-			(at 26.67 27.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" "1=+ 2=-"
-			(at 26.67 27.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Params" "dc=0 ampl=1 f=1k ac=1"
-			(at 30.48 30.3501 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Sim.Type" "SIN"
-			(at 26.67 27.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" "V"
-			(at 26.67 27.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "7c2d23d4-d379-4868-bbd0-5a4acb1420ce")
-		)
-		(pin "2"
-			(uuid "d6c7ce19-6f4a-4b21-8e7b-bd097018453e")
-		)
-		(instances
-			(project ""
-				(path "/98b535a2-07d0-4dae-ae08-2a189bcbfe55"
-					(reference "V4")
 					(unit 1)
 				)
 			)
@@ -9555,76 +8273,6 @@
 		)
 	)
 	(symbol
-		(lib_id "PCM_SL_Devices:Capacitor_PO")
-		(at 58.42 26.67 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "ca18b30c-beec-46ff-89ed-57d0a8177298")
-		(property "Reference" "C5"
-			(at 62.23 25.3999 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "2200uf"
-			(at 62.23 27.9399 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm"
-			(at 54.61 27.432 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 58.42 27.178 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Polarized Capacitor"
-			(at 58.42 26.67 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "31eba78b-0437-458c-83c9-28c3cb13aa28")
-		)
-		(pin "1"
-			(uuid "e59f87aa-664d-449a-9430-262a3ed17e36")
-		)
-		(instances
-			(project "incubator_new_circuit"
-				(path "/98b535a2-07d0-4dae-ae08-2a189bcbfe55"
-					(reference "C5")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Relay:SANYOU_SRD_Form_C")
 		(at 64.77 137.16 180)
 		(unit 1)
@@ -10173,6 +8821,7 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+				(hide yes)
 			)
 		)
 		(property "Value" "WC1602A"
