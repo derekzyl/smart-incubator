@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Environment Control</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-leaf"></i> Smart Incubator</h1>
+            <div id="connection-status" class="status-badge disconnected">Disconnected</div>
+        </header>
+
+        <nav>
+            <button class="nav-btn active" onclick="showTab('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+            <button class="nav-btn" onclick="showTab('controls')"><i class="fas fa-sliders-h"></i> Controls</button>
+            <button class="nav-btn" onclick="showTab('schedule')"><i class="fas fa-calendar-alt"></i> Schedule</button>
+            <button class="nav-btn" onclick="showTab('settings')"><i class="fas fa-cog"></i> Settings</button>
+        </nav>
+
+        <main>
+            <!-- DASHBOARD TAB -->
+            <div id="dashboard" class="tab-content active">
+                <div class="cards-grid">
+                    <div class="card temp-card">
+                        <h3><i class="fas fa-thermometer-half"></i> Temperature</h3>
+                        <div class="value" id="temp-value">--</div>
+                        <div class="unit">°C</div>
+                    </div>
+                    <div class="card humid-card">
+                        <h3><i class="fas fa-tint"></i> Humidity</h3>
+                        <div class="value" id="humid-value">--</div>
+                        <div class="unit">%</div>
+                    </div>
+                </div>
+
+                <div class="status-grid">
+                    <div class="status-item">
+                        <span class="label">Fan</span>
+                        <span id="fan-status" class="status-indicator off">OFF</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Heater</span>
+                        <span id="heater-status" class="status-indicator off">OFF</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Humidifier</span>
+                        <span id="humid-status" class="status-indicator off">OFF</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Stepper</span>
+                        <span id="stepper-pos">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Time</span>
+                        <span id="system-time">--:--:--</span>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="envChart"></canvas>
+                </div>
+            </div>
+
+            <!-- CONTROLS TAB -->
+            <div id="controls" class="tab-content">
+                <div class="card">
+                    <h3>Manual Control</h3>
+                    <p class="warning"><i class="fas fa-exclamation-triangle"></i> Switches system to MANUAL mode.</p>
+                    
+                    <div class="control-group">
+                        <label>Fan</label>
+                        <label class="switch">
+                            <input type="checkbox" id="ctrl-fan" onchange="toggleDevice('fan', this.checked)">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="control-group">
+                        <label>Heater</label>
+                        <label class="switch">
+                            <input type="checkbox" id="ctrl-heater" onchange="toggleDevice('heater', this.checked)">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="control-group">
+                        <label>Humidifier</label>
+                        <label class="switch">
+                            <input type="checkbox" id="ctrl-humidifier" onchange="toggleDevice('humidifier', this.checked)">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="control-group">
+                        <label>Stepper Position</label>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="2000" value="0" class="range-slider" id="ctrl-stepper" onchange="moveStepper(this.value)">
+                            <span id="ctrl-stepper-val">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCHEDULE TAB -->
+            <div id="schedule" class="tab-content">
+                <div class="card">
+                    <h3>Active Schedules</h3>
+                    <button class="btn btn-primary" onclick="openAddScheduleModal()"><i class="fas fa-plus"></i> Add Schedule</button>
+                    <div id="schedule-list" class="schedule-list">
+                        <!-- Schedules injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS TAB -->
+            <div id="settings" class="tab-content">
+                <div class="card">
+                    <h3>Automation Thresholds</h3>
+                    <form id="settings-form" onsubmit="saveSettings(event)">
+                        <div class="form-group">
+                            <label>Min Temperature (°C)</label>
+                            <input type="number" step="0.1" id="set-tempMin" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Max Temperature (°C)</label>
+                            <input type="number" step="0.1" id="set-tempMax" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Min Humidity (%)</label>
+                            <input type="number" step="0.1" id="set-humidMin" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Max Humidity (%)</label>
+                            <input type="number" step="0.1" id="set-humidMax" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Hysteresis</label>
+                            <input type="number" step="0.1" id="set-hysteresis" required>
+                        </div>
+                        <button type="submit" class="btn btn-save">Save Settings</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ADD SCHEDULE MODAL -->
+    <div id="schedule-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddScheduleModal()">&times;</span>
+            <h3>Add Schedule</h3>
+            <form id="schedule-form" onsubmit="saveSchedule(event)">
+                <div class="form-group">
+                    <label>Device</label>
+                    <select id="sch-device">
+                        <option value="0">Fan</option>
+                        <option value="1">Heater</option>
+                        <option value="2">Humidifier</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Start Time</label>
+                        <input type="time" id="sch-start" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Time</label>
+                        <input type="time" id="sch-end" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Days</label>
+                    <div class="days-selector">
+                        <label><input type="checkbox" value="0" checked> Sun</label>
+                        <label><input type="checkbox" value="1" checked> Mon</label>
+                        <label><input type="checkbox" value="2" checked> Tue</label>
+                        <label><input type="checkbox" value="3" checked> Wed</label>
+                        <label><input type="checkbox" value="4" checked> Thu</label>
+                        <label><input type="checkbox" value="5" checked> Fri</label>
+                        <label><input type="checkbox" value="6" checked> Sat</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Rule</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

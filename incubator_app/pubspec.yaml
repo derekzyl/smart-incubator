@@ -28,7 +28,7 @@ dependencies:
   sqflite: ^2.3.0
   
   # Notifications
-  flutter_local_notifications: ^16.3.0
+  flutter_local_notifications: ^18.0.0
   
   # Utilities
   intl: ^0.18.0

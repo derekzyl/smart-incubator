@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../services/incubator_service.dart';
 
 class AnalyticsScreen extends StatefulWidget {
@@ -35,9 +36,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     final incubatorId = service.currentIncubatorId;
 
     if (incubatorId == null) {
-      return const Scaffold(
-        body: Center(child: Text('No incubator selected')),
-      );
+      return const Scaffold(body: Center(child: Text('No incubator selected')));
     }
 
     return Scaffold(
@@ -73,10 +72,14 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                           ),
                           const SizedBox(height: 16),
                           CircularProgressIndicator(
-                            value: _prediction!['predicted_success_rate'] as double,
+                            value:
+                                _prediction!['predicted_success_rate']
+                                    as double,
                             backgroundColor: Colors.grey[300],
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              (_prediction!['predicted_success_rate'] as double) > 0.7
+                              (_prediction!['predicted_success_rate']
+                                          as double) >
+                                      0.7
                                   ? Colors.green
                                   : Colors.orange,
                             ),
@@ -158,23 +161,22 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          ...((_prediction!['recommendations'] as List)
-                              .map((rec) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const Icon(
-                                          Icons.check_circle_outline,
-                                          color: Colors.green,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(rec as String),
-                                        ),
-                                      ],
-                                    ),
-                                  ))),
+                          ...((_prediction!['recommendations'] as List).map(
+                            (rec) => Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(
+                                    Icons.check_circle_outline,
+                                    color: Colors.green,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(child: Text(rec as String)),
+                                ],
+                              ),
+                            ),
+                          )),
                         ],
                       ),
                     ),
@@ -220,10 +222,7 @@ class _MetricRow extends StatelessWidget {
               Text(label),
               Text(
                 '$value/$maxValue',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, color: color),
               ),
             ],
           ),
@@ -238,4 +237,3 @@ class _MetricRow extends StatelessWidget {
     );
   }
 }
-
