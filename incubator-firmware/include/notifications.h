@@ -11,6 +11,7 @@ public:
     NotificationManager();
     void begin();
     void sendAlert(String message);
+    void sendMessage(String message);
     void update(); // Check for messages or handle queue if needed
 
 private:

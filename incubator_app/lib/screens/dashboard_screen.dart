@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:incubator_app/services/direct_incubator_service.dart';
+import 'package:incubator_app/widgets/temp_gauge.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
+
 import '../services/incubator_service.dart';
-import '../services/websocket_service.dart';
-import '../models/sensor_data.dart';
-import '../widgets/temp_gauge.dart';
 import '../widgets/humidity_gauge.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -24,7 +22,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final incubatorId = 'demo-incubator-1';
       context.read<IncubatorService>().setIncubator(incubatorId);
-      context.read<WebSocketService>().connect(incubatorId);
     });
   }
 
@@ -34,43 +31,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: const Text('Incubator Dashboard'),
         actions: [
-          Consumer<WebSocketService>(
-            builder: (context, ws, child) {
+          Consumer<IncubatorService>(
+            builder: (context, service, child) {
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Icon(
-                  ws.isConnected ? Icons.wifi : Icons.wifi_off,
-                  color: ws.isConnected ? Colors.green : Colors.red,
+                  service.isConnected ? Icons.wifi : Icons.wifi_off,
+                  color: service.isConnected ? Colors.green : Colors.red,
                 ),
               );
             },
           ),
         ],
       ),
-      body: Consumer2<IncubatorService, WebSocketService>(
-        builder: (context, service, ws, child) {
-          // Use WebSocket data if available, otherwise fall back to service
-          final sensorData = ws.latestSensorData ?? service.latestSensorData;
+      body: Consumer<IncubatorService>(
+        builder: (context, service, child) {
+          final sensorData = service.latestSensorData;
           final config = service.config;
-          
-          // Update service with WebSocket data
-          if (ws.latestSensorData != null && ws.latestSensorData != service.latestSensorData) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              service.updateSensorData(ws.latestSensorData!);
-            });
-          }
-          
-          // Handle alerts from WebSocket
-          if (ws.latestAlert != null) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              service.addAlert(ws.latestAlert!);
-            });
-          }
 
           if (sensorData == null) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           return SingleChildScrollView(
@@ -105,12 +85,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'System Status',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'System Status',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            if (service is DirectIncubatorService)
+                              DropdownButton<int>(
+                                value: sensorData.systemMode,
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 0,
+                                    child: Text('Auto'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 1,
+                                    child: Text('Manual'),
+                                  ),
+                                ],
+                                onChanged: (val) {
+                                  if (val != null) {
+                                    (service).setSystemMode(val);
+                                  }
+                                },
+                              ),
+                          ],
                         ),
                         const SizedBox(height: 12),
                         _StatusRow(
@@ -121,15 +125,73 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           label: 'Humidifier',
                           isOn: sensorData.humidifierState,
                         ),
-                        _StatusRow(
-                          label: 'Fan Speed',
-                          value: '${sensorData.fanSpeed}%',
-                        ),
+                        _StatusRow(label: 'Fan', isOn: sensorData.fanSpeed > 0),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
+
+                // Manual Controls (Only if Manual Mode)
+                if (sensorData.systemMode == 1 &&
+                    service is DirectIncubatorService) ...[
+                  Card(
+                    color: Colors.blue[50], // Highlight manual controls
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Manual Controls',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Wrap(
+                            spacing: 8.0,
+                            runSpacing: 8.0,
+                            children: [
+                              FilterChip(
+                                label: const Text('Fan'),
+                                selected: sensorData.fanSpeed > 0,
+                                onSelected: (val) => (service).toggleFan(val),
+                              ),
+                              FilterChip(
+                                label: const Text('Heater'),
+                                selected: sensorData.heaterState,
+                                onSelected: (val) =>
+                                    (service).toggleHeater(val),
+                              ),
+                              FilterChip(
+                                label: const Text('Humidifier'),
+                                selected: sensorData.humidifierState,
+                                onSelected: (val) =>
+                                    (service).toggleHumidifier(val),
+                              ),
+                              ActionChip(
+                                avatar: const Icon(Icons.rotate_right),
+                                label: const Text('Turn Eggs'),
+                                onPressed: () {
+                                  (service).turnEggs();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Turning eggs...'),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
 
                 // Sensor Readings
                 Card(
@@ -160,7 +222,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         _ReadingRow(
                           label: 'Average',
-                          value: '${sensorData.averageTemp.toStringAsFixed(1)}°C',
+                          value:
+                              '${sensorData.averageTemp.toStringAsFixed(1)}°C',
                           isBold: true,
                         ),
                       ],
@@ -230,30 +293,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ],
                           ),
                           const SizedBox(height: 12),
-                          ...service.alerts.take(3).map((alert) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      alert.isCritical
-                                          ? Icons.error
-                                          : Icons.warning_amber,
-                                      color: alert.isCritical
-                                          ? Colors.red
-                                          : Colors.orange,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        alert.message,
-                                        style: TextStyle(
-                                          color: Colors.red[900],
+                          ...service.alerts
+                              .take(3)
+                              .map(
+                                (alert) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        alert.isCritical
+                                            ? Icons.error
+                                            : Icons.warning_amber,
+                                        color: alert.isCritical
+                                            ? Colors.red
+                                            : Colors.orange,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          alert.message,
+                                          style: TextStyle(
+                                            color: Colors.red[900],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              )),
+                              ),
                         ],
                       ),
                     ),
@@ -270,7 +337,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String _formatCountdown(DateTime hatchDate) {
     final now = DateTime.now();
     final difference = hatchDate.difference(now);
-    
+
     if (difference.isNegative) {
       return 'Hatch time passed';
     }
@@ -288,11 +355,7 @@ class _StatusRow extends StatelessWidget {
   final bool? isOn;
   final String? value;
 
-  const _StatusRow({
-    required this.label,
-    this.isOn,
-    this.value,
-  });
+  const _StatusRow({required this.label, this.isOn, this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -308,10 +371,7 @@ class _StatusRow extends StatelessWidget {
               color: isOn! ? Colors.green : Colors.grey,
             )
           else if (value != null)
-            Text(
-              value!,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text(value!, style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -348,4 +408,3 @@ class _ReadingRow extends StatelessWidget {
     );
   }
 }
-

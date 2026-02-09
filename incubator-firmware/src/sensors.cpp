@@ -1,6 +1,6 @@
 #include "sensors.h"
 
-EnvironmentSensor::EnvironmentSensor() : dht(PIN_DHT, DHT_TYPE), currentTemp(0.0), currentHumid(0.0), lastReadTime(0) {}
+EnvironmentSensor::EnvironmentSensor() : dht(PIN_DHT, DHT_TYPE), currentTemp(NAN), currentHumid(NAN), lastReadTime(0) {}
 
 void EnvironmentSensor::begin() {
     dht.begin();

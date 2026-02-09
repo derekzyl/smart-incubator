@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../services/incubator_service.dart';
+import 'package:provider/provider.dart';
+
 import '../models/incubator_config.dart';
+import '../services/direct_incubator_service.dart';
+import '../services/incubator_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -14,6 +16,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
+  late TextEditingController _ipController; // New IP Controller
   late TextEditingController _targetTempController;
   late TextEditingController _targetHumidityController;
   late TextEditingController _turnIntervalController;
@@ -25,8 +28,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     final service = context.read<IncubatorService>();
     final config = service.config;
-    
-    _nameController = TextEditingController(text: config?.name ?? '');
+
+    _nameController = TextEditingController(
+      text: config?.name ?? 'My Incubator',
+    );
+
+    String currentIp = '';
+    if (service is DirectIncubatorService) {
+      currentIp = service.baseUrl.replaceAll('http://', '');
+    }
+
+    _ipController = TextEditingController(text: currentIp);
+
     _targetTempController = TextEditingController(
       text: (config?.targetTemp ?? 37.5).toString(),
     );
@@ -43,6 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void dispose() {
     _nameController.dispose();
+    _ipController.dispose();
     _targetTempController.dispose();
     _targetHumidityController.dispose();
     _turnIntervalController.dispose();
@@ -56,7 +70,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     final service = context.read<IncubatorService>();
     final incubatorId = service.currentIncubatorId;
-    
+
     if (incubatorId == null || _selectedHatchDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a hatch date')),
@@ -65,7 +79,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     final config = IncubatorConfig(
-      id: incubatorId,
+      id: incubatorId ?? 'esp32_device',
       userId: service.config?.userId ?? 'default_user',
       name: _nameController.text,
       eggType: _selectedEggType,
@@ -76,8 +90,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
       createdAt: service.config?.createdAt ?? DateTime.now(),
     );
 
-    await service.updateConfig(incubatorId, config);
-    
+    // Save IP Address
+    if (service is DirectIncubatorService) {
+      await service.setIpAddress(_ipController.text);
+    }
+
+    // await service.updateConfig(incubatorId, config); // Backend update skipped for now
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Settings saved successfully')),
@@ -88,11 +107,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _selectHatchDate() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: _selectedHatchDate ?? DateTime.now().add(const Duration(days: 21)),
+      initialDate:
+          _selectedHatchDate ?? DateTime.now().add(const Duration(days: 21)),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
-    
+
     if (picked != null) {
       setState(() {
         _selectedHatchDate = picked;
@@ -106,10 +126,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         title: const Text('Settings'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: _saveSettings,
-          ),
+          IconButton(icon: const Icon(Icons.save), onPressed: _saveSettings),
         ],
       ),
       body: Form(
@@ -131,9 +148,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
             const SizedBox(height: 16),
-            
+
+            // Only show IP config if using Direct Service
+            if (context.read<IncubatorService>() is DirectIncubatorService) ...[
+              TextFormField(
+                controller: _ipController,
+                decoration: const InputDecoration(
+                  labelText: 'ESP32 IP Address',
+                  hintText: 'e.g., 192.168.4.1',
+                  border: OutlineInputBorder(),
+                  helperText: 'Enter the IP shown on Telegram/Serial',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter IP address';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
+            const SizedBox(height: 16),
+
             DropdownButtonFormField<String>(
-              value: _selectedEggType,
+              initialValue: _selectedEggType,
               decoration: const InputDecoration(
                 labelText: 'Egg Type',
                 border: OutlineInputBorder(),
@@ -142,7 +180,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 DropdownMenuItem(value: 'chicken', child: Text('Chicken')),
                 DropdownMenuItem(value: 'duck', child: Text('Duck')),
                 DropdownMenuItem(value: 'reptile', child: Text('Reptile')),
-                DropdownMenuItem(value: 'exotic_bird', child: Text('Exotic Bird')),
+                DropdownMenuItem(
+                  value: 'exotic_bird',
+                  child: Text('Exotic Bird'),
+                ),
               ],
               onChanged: (value) {
                 if (value != null) {
@@ -153,7 +194,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             InkWell(
               onTap: _selectHatchDate,
               child: InputDecorator(
@@ -169,7 +210,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             TextFormField(
               controller: _targetTempController,
               decoration: const InputDecoration(
@@ -190,7 +231,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             TextFormField(
               controller: _targetHumidityController,
               decoration: const InputDecoration(
@@ -211,7 +252,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             TextFormField(
               controller: _turnIntervalController,
               decoration: const InputDecoration(
@@ -237,4 +278,3 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 }
-

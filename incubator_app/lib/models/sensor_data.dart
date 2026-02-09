@@ -7,6 +7,7 @@ class SensorData {
   final bool heaterState;
   final bool humidifierState;
   final int fanSpeed;
+  final int systemMode; // 0=Auto, 1=Manual, 2=Schedule
   final DateTime timestamp;
 
   SensorData({
@@ -18,6 +19,7 @@ class SensorData {
     required this.heaterState,
     required this.humidifierState,
     required this.fanSpeed,
+    this.systemMode = 0, // Default to Auto
     required this.timestamp,
   });
 
@@ -37,4 +39,3 @@ class SensorData {
 
   double get averageTemp => (temp1 + temp2 + tempSht31) / 3.0;
 }
-

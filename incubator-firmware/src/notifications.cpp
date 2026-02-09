@@ -31,6 +31,25 @@ void NotificationManager::sendAlert(String message) {
     }
 }
 
+void NotificationManager::sendMessage(String message) {
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("Cannot send message: No WiFi");
+        return;
+    }
+    
+    // Check if token is default
+    if (String(TELEGRAM_BOT_TOKEN) == "YOUR_BOT_TOKEN") {
+        Serial.println("Message skipped: Telegram credentials not set.");
+        return;
+    }
+
+    if (bot->sendMessage(TELEGRAM_CHAT_ID, message, "Markdown")) {
+        Serial.println("Message sent to Telegram");
+    } else {
+        Serial.println("Failed to send message");
+    }
+}
+
 void NotificationManager::update() {
     // Can handle incoming messages here (e.g. /status)
     // For now, we only push alerts.

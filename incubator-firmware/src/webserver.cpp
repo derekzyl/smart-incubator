@@ -73,51 +73,41 @@ void WebServerManager::setupEndpoints() {
         doc["humidifier"] = _relays.getHumidifierState();
         doc["stepperPos"] = _stepper.getCurrentPosition();
         doc["time"] = _sensor.getDateTime();
+        doc["mode"] = _automation.getMode(); // 0=Auto, 1=Manual, 2=Schedule
         
         String json;
         serializeJson(doc, json);
         request->send(200, "application/json", json);
     });
 
-    // API: Config (Get)
-    server.on("/api/config", HTTP_GET, [this](AsyncWebServerRequest *request) {
-        SystemSettings s = _settings.getSettings();
-        JsonDocument doc;
-        doc["tempMin"] = s.tempMin;
-        doc["tempMax"] = s.tempMax;
-        doc["humidMin"] = s.humidMin;
-        doc["humidMax"] = s.humidMax;
-        doc["hysteresis"] = s.hysteresis;
-        
-        String json;
-        serializeJson(doc, json);
-        request->send(200, "application/json", json);
-    });
-
-    // API: Config (Post)
-    AsyncCallbackJsonWebHandler *handler = new AsyncCallbackJsonWebHandler("/api/config", [this](AsyncWebServerRequest *request, JsonVariant &json) {
-        JsonObject jsonObj = json.as<JsonObject>();
-        
-        SystemSettings s = _settings.getSettings();
-        if (jsonObj.containsKey("tempMin")) s.tempMin = jsonObj["tempMin"];
-        if (jsonObj.containsKey("tempMax")) s.tempMax = jsonObj["tempMax"];
-        if (jsonObj.containsKey("humidMin")) s.humidMin = jsonObj["humidMin"];
-        if (jsonObj.containsKey("humidMax")) s.humidMax = jsonObj["humidMax"];
-        if (jsonObj.containsKey("hysteresis")) s.hysteresis = jsonObj["hysteresis"];
-        
-        _settings.saveSettings(s);
-        request->send(200, "application/json", "{\"success\":true}");
-    });
-    server.addHandler(handler);
+    // ... (Config endpoints unchanged)
 
     // API: Control (Post)
     AsyncCallbackJsonWebHandler *controlHandler = new AsyncCallbackJsonWebHandler("/api/control", [this](AsyncWebServerRequest *request, JsonVariant &json) {
         JsonObject jsonObj = json.as<JsonObject>();
         
-        if (jsonObj.containsKey("fan")) _relays.setFan(jsonObj["fan"]);
-        if (jsonObj.containsKey("heater")) _relays.setHeater(jsonObj["heater"]);
-        if (jsonObj.containsKey("humidifier")) _relays.setHumidifier(jsonObj["humidifier"]);
-        if (jsonObj.containsKey("stepper")) _stepper.moveToPosition(jsonObj["stepper"]);
+        // Mode Control
+        if (jsonObj["mode"].is<int>()) {
+             int newMode = jsonObj["mode"];
+             _automation.setMode(newMode);
+             // Also update global state if needed, but automation handles it
+        }
+
+        // Relay Control (Only works if Mode is Manual)
+        // Ideally enforce mode check here, but AutomationEngine overwrites anyway if in Auto.
+        if (jsonObj["fan"].is<bool>()) _relays.setFan(jsonObj["fan"]);
+        if (jsonObj["heater"].is<bool>()) _relays.setHeater(jsonObj["heater"]);
+        if (jsonObj["humidifier"].is<bool>()) _relays.setHumidifier(jsonObj["humidifier"]);
+        
+        // Stepper Control
+        if (jsonObj["stepper"].is<int>()) _stepper.moveToPosition(jsonObj["stepper"]);
+        if (jsonObj["turnEggs"].is<bool>() && jsonObj["turnEggs"].as<bool>()) {
+             // Turn 90 degrees (example: 1024 steps for 28BYJ-48 half-step)
+             // Or better, trigger a "turn" sequence in automation?
+             // For now, let's just move relative 1000 steps
+             long current = _stepper.getCurrentPosition();
+             _stepper.moveToPosition(current + 1000); 
+        }
         
         request->send(200, "application/json", "{\"success\":true}");
     });

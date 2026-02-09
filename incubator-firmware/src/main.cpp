@@ -60,6 +60,22 @@ void loop() {
     // 1. Update Sensors
     envSensor.update();
 
+    // Notify IP on Connection
+    static bool ipSent = false;
+    if (wifiManager.isConnected()) {
+        if (!ipSent) {
+            String ip = wifiManager.getIP();
+            float temp = envSensor.getTemperature();
+            String msg = "✅ *Incubator Online*\n\n";
+            msg += "IP Address: `" + ip + "`\n";
+            msg += "Temp: " + String(temp, 1) + "°C";
+            notifications.sendMessage(msg);
+            ipSent = true;
+        }
+    } else {
+        ipSent = false;
+    }
+
     // 2. Handle Buttons
     if (buttons.isModeButtonPressed()) {
         if (currentMode == MODE_AUTO) currentMode = MODE_MANUAL;

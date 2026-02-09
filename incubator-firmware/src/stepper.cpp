@@ -1,11 +1,10 @@
 #include "stepper.h"
 
-StepperController::StepperController() : stepper(AccelStepper::DRIVER, PIN_STEPPER_STEP, PIN_STEPPER_DIR) {}
+StepperController::StepperController() : stepper(AccelStepper::HALF4WIRE, PIN_STEPPER_IN1, PIN_STEPPER_IN3, PIN_STEPPER_IN2, PIN_STEPPER_IN4) {
+    // Note: AccelStepper order for ULN2003 is usually IN1, IN3, IN2, IN4
+}
 
 void StepperController::begin() {
-    stepper.setEnablePin(PIN_STEPPER_ENABLE);
-    stepper.setPinsInverted(false, false, true); // Invert enable pin if needed (usually active LOW)
-    stepper.enableOutputs();
     stepper.setMaxSpeed(STEPPER_MAX_SPEED);
     stepper.setAcceleration(STEPPER_ACCEL);
 }

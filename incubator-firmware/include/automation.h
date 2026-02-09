@@ -1,3 +1,6 @@
+#ifndef INCUBATOR_AUTOMATION_H
+#define INCUBATOR_AUTOMATION_H
+
 #include <Arduino.h>
 #include "sensors.h"
 #include "relays.h"
@@ -10,6 +13,7 @@ public:
     AutomationEngine(EnvironmentSensor& sensor, RelayController& relays, SettingsManager& settings, Scheduler& scheduler, NotificationManager& notifications);
     void update();
     void setMode(int mode); // 0=Auto, 1=Manual, 2=Schedule
+    int getMode() const { return _currentMode; }
 
 private:
     EnvironmentSensor& _sensor;
@@ -26,8 +30,9 @@ private:
     bool _humidLowAlertSent = false;
     unsigned long _lastAlertTime = 0;
 
+    void checkAlerts();
     void checkTemperature();
     void checkHumidity();
 };
 
-#endif // AUTOMATION_H
+#endif // INCUBATOR_AUTOMATION_H

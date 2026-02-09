@@ -17,6 +17,7 @@ public:
 private:
     unsigned long lastReconnectAttempt;
     unsigned long reconnectInterval;
+    bool _connected;
 };
 
 #endif // WIFI_MANAGER_H

@@ -1,3 +1,6 @@
+#ifndef INCUBATOR_WEBSERVER_H
+#define INCUBATOR_WEBSERVER_H
+
 #include <Arduino.h>
 #include <ESPAsyncWebServer.h>
 #include <AsyncJson.h>
@@ -32,4 +35,4 @@ private:
     unsigned long lastWsPush;
 };
 
-#endif // WEBSERVER_H
+#endif // INCUBATOR_WEBSERVER_H

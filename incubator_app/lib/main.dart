@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:incubator_app/services/incubator_service.dart';
 import 'package:provider/provider.dart';
+
+import 'screens/analytics_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/settings_screen.dart';
-import 'screens/analytics_screen.dart';
-import 'services/incubator_service.dart';
-import 'services/websocket_service.dart';
+import 'services/direct_incubator_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,8 +19,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => IncubatorService()),
-        ChangeNotifierProvider(create: (_) => WebSocketService()),
+        // Use DirectIncubatorService as the source for IncubatorService interface/usage
+        // NOTE: Ideally we'd implement an interface or abstract class, but for quick switch:
+        // We'll provide DirectIncubatorService and modify dependent widgets if needed,
+        // OR make DirectIncubatorService extend/implement IncubatorService.
+        // Given complexity, let's provide DirectIncubatorService and make sure UI consumes it.
+        // Wait, the UI (dashboard etc) consumes `IncubatorService`.
+        // So `DirectIncubatorService` should probably implement `IncubatorService` or we swap the provider type.
+        // Let's swap provider type but keep the name usually consumes if feasible.
+        // Actually, easiest is to provide `DirectIncubatorService` AND alias it?
+        // No, let's just use `DirectIncubatorService` and update `main.dart` imports.
+        // But dashboard uses `context.read<IncubatorService>()`.
+        // So I should make `DirectIncubatorService` extend `IncubatorService` or provide it AS `IncubatorService`.
+        // Explicitly provide as IncubatorService so Consumers can find it
+        ChangeNotifierProvider<IncubatorService>(
+          create: (_) => DirectIncubatorService(),
+        ),
       ],
       child: MaterialApp(
         title: 'Smart Incubator',

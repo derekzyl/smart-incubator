@@ -1,13 +1,15 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import '../models/sensor_data.dart';
-import '../models/incubator_config.dart';
+
 import '../models/alert.dart';
+import '../models/incubator_config.dart';
+import '../models/sensor_data.dart';
 
 class IncubatorService extends ChangeNotifier {
   static const String baseUrl = 'http://localhost:8000/api/v1';
-  
+
   String? _currentIncubatorId;
   SensorData? _latestSensorData;
   IncubatorConfig? _config;
@@ -19,13 +21,11 @@ class IncubatorService extends ChangeNotifier {
   IncubatorConfig? get config => _config;
   List<Alert> get alerts => _alerts;
   bool get isLoading => _isLoading;
+  bool get isConnected => false; // Default for base class
 
   Future<void> setIncubator(String incubatorId) async {
     _currentIncubatorId = incubatorId;
-    await Future.wait([
-      loadConfig(incubatorId),
-      loadAlerts(incubatorId),
-    ]);
+    await Future.wait([loadConfig(incubatorId), loadAlerts(incubatorId)]);
     notifyListeners();
   }
 
@@ -47,13 +47,13 @@ class IncubatorService extends ChangeNotifier {
     try {
       _isLoading = true;
       notifyListeners();
-      
+
       final response = await http.put(
         Uri.parse('$baseUrl/incubator/$incubatorId'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(config.toJson()),
       );
-      
+
       if (response.statusCode == 200) {
         _config = IncubatorConfig.fromJson(json.decode(response.body));
         notifyListeners();
@@ -82,7 +82,7 @@ class IncubatorService extends ChangeNotifier {
           },
         ),
       );
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return List<Map<String, dynamic>>.from(data['data']);
@@ -96,11 +96,11 @@ class IncubatorService extends ChangeNotifier {
   Future<void> loadAlerts(String incubatorId) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/alerts/$incubatorId').replace(
-          queryParameters: {'resolved': 'false'},
-        ),
+        Uri.parse(
+          '$baseUrl/alerts/$incubatorId',
+        ).replace(queryParameters: {'resolved': 'false'}),
       );
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         _alerts = (data['alerts'] as List)
@@ -118,7 +118,7 @@ class IncubatorService extends ChangeNotifier {
       final response = await http.get(
         Uri.parse('$baseUrl/analytics/hatch-prediction/$incubatorId'),
       );
-      
+
       if (response.statusCode == 200) {
         return json.decode(response.body);
       }
@@ -137,5 +137,11 @@ class IncubatorService extends ChangeNotifier {
     _alerts.insert(0, alert);
     notifyListeners();
   }
-}
 
+  // Manual Control Stubs (Overridden by DirectIncubatorService)
+  Future<void> setSystemMode(int mode) async {}
+  Future<void> turnEggs() async {}
+  Future<void> toggleFan(bool on) async {}
+  Future<void> toggleHeater(bool on) async {}
+  Future<void> toggleHumidifier(bool on) async {}
+}
