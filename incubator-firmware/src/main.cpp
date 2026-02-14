@@ -2,7 +2,7 @@
 #include "config.h"
 #include "sensors.h"
 #include "relays.h"
-#include "stepper.h"
+#include "servo_control.h"
 #include "display.h"
 #include "buttons.h"
 #include "storage.h"
@@ -15,15 +15,17 @@
 // --- Global Objects ---
 EnvironmentSensor envSensor;
 RelayController relays;
-StepperController stepper;
+ServoController servo;
 DisplayController display;
+
 ButtonHandler buttons;
 SettingsManager settingsManager;
 Scheduler scheduler(envSensor, relays, settingsManager);
 NotificationManager notifications;
 AutomationEngine automation(envSensor, relays, settingsManager, scheduler, notifications);
 WifiManager wifiManager;
-WebServerManager webServer(envSensor, relays, stepper, settingsManager, automation, scheduler);
+WebServerManager webServer(envSensor, relays, servo, settingsManager, automation, scheduler);
+
 
 // System Mode
 enum SystemMode { MODE_AUTO, MODE_MANUAL, MODE_SCHEDULE };
@@ -39,7 +41,7 @@ void setup() {
     scheduler.begin(); // Load schedules
     notifications.begin();
     relays.begin();
-    stepper.begin();
+    servo.begin();
     display.begin();
     buttons.begin();
     
@@ -98,8 +100,9 @@ void loop() {
          }
     }
 
-    // 3. Update Stepper
-    stepper.update();
+    // 3. Update Stepper (Not needed for Servo)
+    // servo.update(); 
+
 
     // 4. Update Display
     String modeStr;

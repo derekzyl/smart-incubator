@@ -15,11 +15,11 @@
 #define RELAY_ON            (RELAY_ACTIVE_LOW ? LOW : HIGH)
 #define RELAY_OFF           (RELAY_ACTIVE_LOW ? HIGH : LOW)
 
-// Stepper Motor (ULN2003 / 28BYJ-48)
-#define PIN_STEPPER_IN1     16 // RX2
-#define PIN_STEPPER_IN2     17 // TX2
-#define PIN_STEPPER_IN3     18
-#define PIN_STEPPER_IN4     19
+// Servo Motor (Egg Turner)
+#define PIN_SERVO           18
+#define SERVO_RETRACT_ANGLE 0
+#define SERVO_EXTEND_ANGLE  90
+
 
 // Buttons
 #define PIN_BUTTON_MODE     4
@@ -50,9 +50,7 @@
 // Sensor Settings
 #define DHT_TYPE            DHT22
 
-// Stepper Settings
-#define STEPPER_MAX_SPEED   1000
-#define STEPPER_ACCEL       500
+
 
 // Default Thresholds (can be overridden by NVS)
 #define DEFAULT_TEMP_MIN    20.0

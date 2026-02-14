@@ -1,8 +1,8 @@
 #include "webserver.h"
 #include <SPIFFS.h>
 
-WebServerManager::WebServerManager(EnvironmentSensor& sensor, RelayController& relays, StepperController& stepper, SettingsManager& settings, AutomationEngine& automation, Scheduler& scheduler)
-    : server(80), ws("/ws"), _sensor(sensor), _relays(relays), _stepper(stepper), _settings(settings), _automation(automation), _scheduler(scheduler), lastWsPush(0) {}
+WebServerManager::WebServerManager(EnvironmentSensor& sensor, RelayController& relays, ServoController& servo, SettingsManager& settings, AutomationEngine& automation, Scheduler& scheduler)
+    : server(80), ws("/ws"), _sensor(sensor), _relays(relays), _servo(servo), _settings(settings), _automation(automation), _scheduler(scheduler), lastWsPush(0) {}
 
 void WebServerManager::begin() {
     if(!SPIFFS.begin(true)){
@@ -71,7 +71,7 @@ void WebServerManager::setupEndpoints() {
         doc["fan"] = _relays.getFanState();
         doc["heater"] = _relays.getHeaterState();
         doc["humidifier"] = _relays.getHumidifierState();
-        doc["stepperPos"] = _stepper.getCurrentPosition();
+        doc["servoAngle"] = _servo.getCurrentAngle();
         doc["time"] = _sensor.getDateTime();
         doc["mode"] = _automation.getMode(); // 0=Auto, 1=Manual, 2=Schedule
         
@@ -99,14 +99,16 @@ void WebServerManager::setupEndpoints() {
         if (jsonObj["heater"].is<bool>()) _relays.setHeater(jsonObj["heater"]);
         if (jsonObj["humidifier"].is<bool>()) _relays.setHumidifier(jsonObj["humidifier"]);
         
-        // Stepper Control
-        if (jsonObj["stepper"].is<int>()) _stepper.moveToPosition(jsonObj["stepper"]);
+        // Servo Control
+        if (jsonObj["servo"].is<int>()) _servo.moveToAngle(jsonObj["servo"]);
         if (jsonObj["turnEggs"].is<bool>() && jsonObj["turnEggs"].as<bool>()) {
-             // Turn 90 degrees (example: 1024 steps for 28BYJ-48 half-step)
-             // Or better, trigger a "turn" sequence in automation?
-             // For now, let's just move relative 1000 steps
-             long current = _stepper.getCurrentPosition();
-             _stepper.moveToPosition(current + 1000); 
+             // Turn Sequence (e.g. Extend then Retract?)
+             // For now, toggle state based on current
+             if (_servo.getCurrentAngle() < 45) {
+                 _servo.turnEggs(true); // Extend
+             } else {
+                 _servo.turnEggs(false); // Retract
+             }
         }
         
         request->send(200, "application/json", "{\"success\":true}");
