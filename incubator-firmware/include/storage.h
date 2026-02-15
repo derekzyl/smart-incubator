@@ -12,6 +12,10 @@ struct SystemSettings {
     float humidMax;
     float hysteresis;
     bool useCelsius;
+    int servoExtendAngle;
+    int servoRetractAngle;
+    int turnIntervalMinutes;
+    unsigned long incubationStartDate; // 0 if not set
 };
 
 class SettingsManager {
@@ -28,7 +32,9 @@ public:
     void setTempMax(float v);
     void setHumidMin(float v);
     void setHumidMax(float v);
+
     void setHysteresis(float v);
+    void setIncubationStartDate(unsigned long v);
 
 private:
     Preferences preferences;

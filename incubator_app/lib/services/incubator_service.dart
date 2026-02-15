@@ -5,12 +5,13 @@ import 'package:http/http.dart' as http;
 
 import '../models/alert.dart';
 import '../models/incubator_config.dart';
+import '../models/schedule.dart';
 import '../models/sensor_data.dart';
 
 class IncubatorService extends ChangeNotifier {
-  static const String baseUrl = 'http://localhost:8000/api/v1';
+  // Base URL is not used for direct connection, we use the IP (incubatorId)
 
-  String? _currentIncubatorId;
+  String? _currentIncubatorId; // This is now the IP Address
   SensorData? _latestSensorData;
   IncubatorConfig? _config;
   List<Alert> _alerts = [];
@@ -21,19 +22,17 @@ class IncubatorService extends ChangeNotifier {
   IncubatorConfig? get config => _config;
   List<Alert> get alerts => _alerts;
   bool get isLoading => _isLoading;
-  bool get isConnected => false; // Default for base class
+  bool get isConnected => true; // Assume connected if IP is set
 
-  Future<void> setIncubator(String incubatorId) async {
-    _currentIncubatorId = incubatorId;
-    await Future.wait([loadConfig(incubatorId), loadAlerts(incubatorId)]);
+  Future<void> setIncubator(String ipAddress) async {
+    _currentIncubatorId = ipAddress;
+    await Future.wait([loadConfig(ipAddress), loadAlerts(ipAddress)]);
     notifyListeners();
   }
 
-  Future<void> loadConfig(String incubatorId) async {
+  Future<void> loadConfig(String ip) async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/incubator/$incubatorId'),
-      );
+      final response = await http.get(Uri.parse('http://$ip/api/config'));
       if (response.statusCode == 200) {
         _config = IncubatorConfig.fromJson(json.decode(response.body));
         notifyListeners();
@@ -43,20 +42,21 @@ class IncubatorService extends ChangeNotifier {
     }
   }
 
-  Future<void> updateConfig(String incubatorId, IncubatorConfig config) async {
+  Future<void> updateConfig(String ip, IncubatorConfig config) async {
     try {
       _isLoading = true;
       notifyListeners();
 
-      final response = await http.put(
-        Uri.parse('$baseUrl/incubator/$incubatorId'),
+      final response = await http.post(
+        // Firmware uses POST for config update
+        Uri.parse('http://$ip/api/config'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(config.toJson()),
       );
 
       if (response.statusCode == 200) {
-        _config = IncubatorConfig.fromJson(json.decode(response.body));
-        notifyListeners();
+        // Refresh config to confirm
+        loadConfig(ip);
       }
     } catch (e) {
       debugPrint('Error updating config: $e');
@@ -67,25 +67,17 @@ class IncubatorService extends ChangeNotifier {
   }
 
   Future<List<Map<String, dynamic>>> getHistory(
-    String incubatorId,
+    String ip,
     DateTime startDate,
     DateTime endDate, {
     String resolution = '5min',
   }) async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/sensors/history/$incubatorId').replace(
-          queryParameters: {
-            'start_date': startDate.toIso8601String(),
-            'end_date': endDate.toIso8601String(),
-            'resolution': resolution,
-          },
-        ),
-      );
+      final response = await http.get(Uri.parse('http://$ip/api/history'));
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return List<Map<String, dynamic>>.from(data['data']);
+        final List<dynamic> data = json.decode(response.body);
+        return List<Map<String, dynamic>>.from(data);
       }
     } catch (e) {
       debugPrint('Error loading history: $e');
@@ -93,31 +85,15 @@ class IncubatorService extends ChangeNotifier {
     return [];
   }
 
-  Future<void> loadAlerts(String incubatorId) async {
-    try {
-      final response = await http.get(
-        Uri.parse(
-          '$baseUrl/alerts/$incubatorId',
-        ).replace(queryParameters: {'resolved': 'false'}),
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        _alerts = (data['alerts'] as List)
-            .map((json) => Alert.fromJson(json))
-            .toList();
-        notifyListeners();
-      }
-    } catch (e) {
-      debugPrint('Error loading alerts: $e');
-    }
+  Future<void> loadAlerts(String ip) async {
+    // Firmware doesn't have alerts API yet, stubbing
+    _alerts = [];
+    notifyListeners();
   }
 
-  Future<Map<String, dynamic>?> getHatchPrediction(String incubatorId) async {
+  Future<Map<String, dynamic>?> getHatchPrediction(String ip) async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/analytics/hatch-prediction/$incubatorId'),
-      );
+      final response = await http.get(Uri.parse('http://$ip/api/analytics'));
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
@@ -138,10 +114,97 @@ class IncubatorService extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Manual Control Stubs (Overridden by DirectIncubatorService)
-  Future<void> setSystemMode(int mode) async {}
-  Future<void> turnEggs() async {}
-  Future<void> toggleFan(bool on) async {}
-  Future<void> toggleHeater(bool on) async {}
-  Future<void> toggleHumidifier(bool on) async {}
+  // Manual Control Stubs - Implemented via API
+  Future<void> setSystemMode(int mode) async {
+    await _sendControlCommand({'mode': mode});
+  }
+
+  Future<void> turnEggs() async {
+    await _sendControlCommand({'turnEggs': true});
+  }
+
+  Future<void> toggleFan(bool on) async {
+    await _sendControlCommand({'fan': on});
+  }
+
+  Future<void> toggleHeater(bool on) async {
+    await _sendControlCommand({'heater': on});
+  }
+
+  Future<void> toggleHumidifier(bool on) async {
+    await _sendControlCommand({'humidifier': on});
+  }
+
+  Future<void> _sendControlCommand(Map<String, dynamic> command) async {
+    if (_currentIncubatorId == null) return;
+    try {
+      await http.post(
+        Uri.parse('http://$_currentIncubatorId/api/control'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(command),
+      );
+    } catch (e) {
+      debugPrint("Control Error: $e");
+    }
+  }
+
+  // --- Schedule API ---
+
+  Future<List<Schedule>> getSchedules(String ip) async {
+    try {
+      final response = await http.get(Uri.parse('http://$ip/api/schedule'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((e) => Schedule.fromJson(e)).toList();
+      }
+    } catch (e) {
+      debugPrint('Error loading schedules: $e');
+    }
+    return [];
+  }
+
+  Future<void> addSchedule(String ip, Schedule schedule) async {
+    try {
+      await http.post(
+        Uri.parse('http://$ip/api/schedule'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(schedule.toJson()),
+      );
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error adding schedule: $e');
+    }
+  }
+
+  Future<void> deleteSchedule(String ip, int id) async {
+    try {
+      // API expects DELETE with query param id
+      await http.delete(Uri.parse('http://$ip/api/schedule?id=$id'));
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error deleting schedule: $e');
+    }
+  }
+
+  // --- Time Sync ---
+
+  Future<void> syncTime(String ip) async {
+    try {
+      final now = DateTime.now();
+      // ESP32 usually expects UTC epoch, but if no timezone management, maybe local?
+      // Let's send local epoch if we want it to match phone exactly without TZ math on MCU.
+      // Actually, safest is to send what the phone shows.
+      final epoch = now.millisecondsSinceEpoch ~/ 1000;
+
+      await http.post(
+        Uri.parse('http://$ip/api/time'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'epoch': epoch}),
+      );
+      debugPrint("Time synced to: $now");
+    } catch (e) {
+      debugPrint('Error syncing time: $e');
+    }
+  }
 }

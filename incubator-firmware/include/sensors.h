@@ -15,6 +15,7 @@ public:
     float getHumidity();
     String getDateTime();
     DateTime now();
+    void setTime(unsigned long epoch);
 
 private:
     DHT dht;

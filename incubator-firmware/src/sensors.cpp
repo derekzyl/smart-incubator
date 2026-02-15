@@ -17,16 +17,19 @@ void EnvironmentSensor::update() {
     unsigned long currentMillis = millis();
     if (currentMillis - lastReadTime >= 2000) { // Read every 2 seconds
         lastReadTime = currentMillis;
-        float h = dht.readHumidity();
         float t = dht.readTemperature();
+        float h = dht.readHumidity();
 
-        if (isnan(h) || isnan(t)) {
-            Serial.println(F("Failed to read from DHT sensor!"));
-            return;
+        if (isnan(t) || isnan(h)) {
+            Serial.println("Failed to read from DHT sensor!");
+            // Do not return, keep old values or just log failure.
+            // Better yet: if NAN, maybe set to 0 or some error state if critical?
+            // For now, let's just NOT update currentTemp/Humid if it's NAN
+            // effectively holding the last good value.
+        } else {
+            currentTemp = t;
+            currentHumid = h;
         }
-
-        currentTemp = t;
-        currentHumid = h;
     }
 }
 
@@ -46,4 +49,9 @@ String EnvironmentSensor::getDateTime() {
 
 DateTime EnvironmentSensor::now() {
     return rtc.now();
+}
+
+void EnvironmentSensor::setTime(unsigned long epoch) {
+    rtc.adjust(DateTime(epoch)); // RTClib supports epoch
+    Serial.printf("Time updated to epoch: %lu\n", epoch);
 }

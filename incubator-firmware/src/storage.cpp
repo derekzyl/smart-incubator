@@ -15,10 +15,16 @@ void SettingsManager::loadSettings() {
     currentSettings.humidMax = preferences.getFloat("humidMax", DEFAULT_HUMID_MAX);
     currentSettings.hysteresis = preferences.getFloat("hysteresis", DEFAULT_HYSTERESIS);
     currentSettings.useCelsius = preferences.getBool("useCelsius", true);
+    currentSettings.servoExtendAngle = preferences.getInt("sExt", DEFAULT_SERVO_EXTEND);
+    currentSettings.servoRetractAngle = preferences.getInt("sRet", DEFAULT_SERVO_RETRACT);
+    currentSettings.turnIntervalMinutes = preferences.getInt("tInt", DEFAULT_TURN_INTERVAL);
+    currentSettings.incubationStartDate = preferences.getULong("startDate", 0);
     
     Serial.println("Settings loaded:");
     Serial.printf("Temp Min: %.1f, Max: %.1f\n", currentSettings.tempMin, currentSettings.tempMax);
     Serial.printf("Humid Min: %.1f, Max: %.1f\n", currentSettings.humidMin, currentSettings.humidMax);
+    Serial.printf("Servo Ext: %d, Ret: %d, Int: %d\n", currentSettings.servoExtendAngle, currentSettings.servoRetractAngle, currentSettings.turnIntervalMinutes);
+    Serial.printf("Start Date: %lu\n", currentSettings.incubationStartDate);
 }
 
 SystemSettings SettingsManager::getSettings() {
@@ -37,6 +43,10 @@ void SettingsManager::save() {
     preferences.putFloat("humidMax", currentSettings.humidMax);
     preferences.putFloat("hysteresis", currentSettings.hysteresis);
     preferences.putBool("useCelsius", currentSettings.useCelsius);
+    preferences.putInt("sExt", currentSettings.servoExtendAngle);
+    preferences.putInt("sRet", currentSettings.servoRetractAngle);
+    preferences.putInt("tInt", currentSettings.turnIntervalMinutes);
+    preferences.putULong("startDate", currentSettings.incubationStartDate);
     Serial.println("Settings saved to NVS.");
 }
 
@@ -63,4 +73,9 @@ void SettingsManager::setHumidMax(float v) {
 void SettingsManager::setHysteresis(float v) {
     currentSettings.hysteresis = v;
     preferences.putFloat("hysteresis", v);
+}
+
+void SettingsManager::setIncubationStartDate(unsigned long v) {
+    currentSettings.incubationStartDate = v;
+    preferences.putULong("startDate", v);
 }

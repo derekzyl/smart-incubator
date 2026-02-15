@@ -17,8 +17,9 @@
 
 // Servo Motor (Egg Turner)
 #define PIN_SERVO           18
-#define SERVO_RETRACT_ANGLE 0
-#define SERVO_EXTEND_ANGLE  90
+#define DEFAULT_SERVO_RETRACT 0
+#define DEFAULT_SERVO_EXTEND  170 // Increased from 90 per user request
+#define DEFAULT_TURN_INTERVAL 60 // Minutes
 
 
 // Buttons
@@ -52,11 +53,11 @@
 
 
 
-// Default Thresholds (can be overridden by NVS)
-#define DEFAULT_TEMP_MIN    20.0
-#define DEFAULT_TEMP_MAX    25.0
-#define DEFAULT_HUMID_MIN   40.0
-#define DEFAULT_HUMID_MAX   60.0
-#define DEFAULT_HYSTERESIS  1.0
+// Default Thresholds for egg hatching (chicken eggs - can be overridden by app/NVS)
+#define DEFAULT_TEMP_MIN    37.0
+#define DEFAULT_TEMP_MAX    38.0
+#define DEFAULT_HUMID_MIN   50.0
+#define DEFAULT_HUMID_MAX   65.0
+#define DEFAULT_HYSTERESIS  0.5
 
 #endif // CONFIG_H

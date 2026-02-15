@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../models/egg_type_preset.dart';
 import '../models/incubator_config.dart';
 import '../services/direct_incubator_service.dart';
 import '../services/incubator_service.dart';
@@ -26,31 +27,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    final service = context.read<IncubatorService>();
-    final config = service.config;
-
-    _nameController = TextEditingController(
-      text: config?.name ?? 'My Incubator',
-    );
-
-    String currentIp = '';
-    if (service is DirectIncubatorService) {
-      currentIp = service.baseUrl.replaceAll('http://', '');
-    }
-
-    _ipController = TextEditingController(text: currentIp);
-
+    _nameController = TextEditingController(text: 'My Incubator');
+    _ipController = TextEditingController();
     _targetTempController = TextEditingController(
-      text: (config?.targetTemp ?? 37.5).toString(),
+      text: EggTypePreset.forType('chicken').targetTemp.toString(),
     );
     _targetHumidityController = TextEditingController(
-      text: (config?.targetHumidity ?? 55.0).toString(),
+      text: EggTypePreset.forType('chicken').targetHumidity.toString(),
     );
     _turnIntervalController = TextEditingController(
-      text: (config?.turnIntervalHours ?? 4).toString(),
+      text: EggTypePreset.forType('chicken').turnIntervalHours.toString(),
     );
-    _selectedEggType = config?.eggType ?? 'chicken';
-    _selectedHatchDate = config?.hatchDate;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadInitialConfig());
+  }
+
+  Future<void> _loadInitialConfig() async {
+    final service = context.read<IncubatorService>();
+    if (service is DirectIncubatorService) {
+      await service.loadConfig(service.baseUrl.replaceAll('http://', ''));
+      if (!mounted) return;
+      final config = service.config;
+      setState(() {
+        _nameController.text = config?.name ?? 'My Incubator';
+        _ipController.text = service.baseUrl.replaceAll('http://', '');
+        _targetTempController.text =
+            (config?.targetTemp ?? EggTypePreset.forType(_selectedEggType).targetTemp)
+                .toString();
+        _targetHumidityController.text =
+            (config?.targetHumidity ?? EggTypePreset.forType(_selectedEggType).targetHumidity)
+                .toString();
+        _turnIntervalController.text =
+            (config?.turnIntervalHours ?? EggTypePreset.forType(_selectedEggType).turnIntervalHours)
+                .toString();
+        _selectedEggType = config?.eggType ?? 'chicken';
+        _selectedHatchDate = config?.hatchDate;
+      });
+    } else {
+      final config = service.config;
+      if (config != null) {
+        setState(() {
+          _nameController.text = config.name;
+          _targetTempController.text = config.targetTemp.toString();
+          _targetHumidityController.text = config.targetHumidity.toString();
+          _turnIntervalController.text = config.turnIntervalHours.toString();
+          _selectedEggType = config.eggType;
+          _selectedHatchDate = config.hatchDate;
+        });
+      }
+    }
   }
 
   @override
@@ -69,17 +94,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     final service = context.read<IncubatorService>();
-    final incubatorId = service.currentIncubatorId;
-
-    if (incubatorId == null || _selectedHatchDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a hatch date')),
-      );
-      return;
-    }
+    final incubatorId = service.currentIncubatorId ?? 'esp32_device';
 
     final config = IncubatorConfig(
-      id: incubatorId ?? 'esp32_device',
+      id: incubatorId,
       userId: service.config?.userId ?? 'default_user',
       name: _nameController.text,
       eggType: _selectedEggType,
@@ -90,16 +108,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
       createdAt: service.config?.createdAt ?? DateTime.now(),
     );
 
-    // Save IP Address
     if (service is DirectIncubatorService) {
       await service.setIpAddress(_ipController.text);
+      try {
+        await service.updateConfig(
+          service.baseUrl.replaceAll('http://', ''),
+          config,
+        );
+        await service.setSystemMode(0); // Switch to Auto mode with new settings
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to sync with device: $e')),
+          );
+        }
+        return;
+      }
+    } else {
+      await service.updateConfig(incubatorId, config);
     }
-
-    // await service.updateConfig(incubatorId, config); // Backend update skipped for now
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Settings saved successfully')),
+        const SnackBar(content: Text('Settings saved and synced to device')),
       );
     }
   }
@@ -171,10 +202,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 16),
 
             DropdownButtonFormField<String>(
-              initialValue: _selectedEggType,
+              value: _selectedEggType,
               decoration: const InputDecoration(
                 labelText: 'Egg Type',
                 border: OutlineInputBorder(),
+                helperText: 'Select to apply recommended presets',
               ),
               items: const [
                 DropdownMenuItem(value: 'chicken', child: Text('Chicken')),
@@ -189,6 +221,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 if (value != null) {
                   setState(() {
                     _selectedEggType = value;
+                    final preset = EggTypePreset.forType(value);
+                    _targetTempController.text = preset.targetTemp.toString();
+                    _targetHumidityController.text =
+                        preset.targetHumidity.toString();
+                    _turnIntervalController.text =
+                        preset.turnIntervalHours.toString();
                   });
                 }
               },

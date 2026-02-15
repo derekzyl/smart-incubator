@@ -10,7 +10,7 @@ class DisplayController {
 public:
     DisplayController();
     void begin();
-    void update(float temp, float humid, const String& time, bool fan, bool heater, bool humidState, const String& mode);
+    void update(float temp, float humid, const String& time, bool fan, bool heater, bool humidState, const String& mode, const String& ip);
     void showMessage(const String& line1, const String& line2);
 
 private:

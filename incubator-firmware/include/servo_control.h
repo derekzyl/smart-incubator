@@ -13,7 +13,7 @@ public:
     int getCurrentAngle();
     
     // Automation helper
-    void turnEggs(bool extend); // true = 90 (extend), false = 0 (retract)
+    void turnEggs(bool extend, int extendAngle, int retractAngle); // Use settings for angles
 
 private:
     Servo myservo;

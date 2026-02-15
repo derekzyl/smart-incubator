@@ -14,7 +14,7 @@ void ServoController::begin() {
     myservo.attach(_servoPin, 500, 2400); // Standard min/max pulse width
     
     // Initial position
-    moveToAngle(SERVO_RETRACT_ANGLE);
+    moveToAngle(DEFAULT_SERVO_RETRACT);
 }
 
 void ServoController::moveToAngle(int angle) {
@@ -30,10 +30,10 @@ int ServoController::getCurrentAngle() {
     return _currentAngle;
 }
 
-void ServoController::turnEggs(bool extend) {
+void ServoController::turnEggs(bool extend, int extendAngle, int retractAngle) {
     if (extend) {
-        moveToAngle(SERVO_EXTEND_ANGLE);
+        moveToAngle(extendAngle);
     } else {
-        moveToAngle(SERVO_RETRACT_ANGLE);
+        moveToAngle(retractAngle);
     }
 }

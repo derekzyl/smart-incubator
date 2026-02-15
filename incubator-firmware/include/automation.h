@@ -5,12 +5,13 @@
 #include "sensors.h"
 #include "relays.h"
 #include "storage.h"
+#include "servo_control.h"
 #include "scheduler.h"
 #include "notifications.h"
 
 class AutomationEngine {
 public:
-    AutomationEngine(EnvironmentSensor& sensor, RelayController& relays, SettingsManager& settings, Scheduler& scheduler, NotificationManager& notifications);
+    AutomationEngine(EnvironmentSensor& sensor, RelayController& relays, ServoController& servo, SettingsManager& settings, Scheduler& scheduler, NotificationManager& notifications);
     void update();
     void setMode(int mode); // 0=Auto, 1=Manual, 2=Schedule
     int getMode() const { return _currentMode; }
@@ -18,6 +19,7 @@ public:
 private:
     EnvironmentSensor& _sensor;
     RelayController& _relays;
+    ServoController& _servo;
     SettingsManager& _settings;
     Scheduler& _scheduler;
     NotificationManager& _notifications;
@@ -33,6 +35,10 @@ private:
     void checkAlerts();
     void checkTemperature();
     void checkHumidity();
+    void checkEggTurning();
+
+    unsigned long _lastTurnTime = 0;
+    bool _isServoExtended = false;
 };
 
 #endif // INCUBATOR_AUTOMATION_H

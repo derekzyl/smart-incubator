@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../services/incubator_service.dart';
 import '../widgets/humidity_gauge.dart';
+import 'schedule_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -19,9 +20,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     // For demo purposes, use a default incubator ID
     // In production, this would come from user authentication
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final incubatorId = 'demo-incubator-1';
-      context.read<IncubatorService>().setIncubator(incubatorId);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final service = context.read<IncubatorService>();
+      if (service is DirectIncubatorService) {
+        final ip = service.baseUrl.replaceAll('http://', '');
+        await service.loadConfig(ip);
+        await service.syncTime(ip);
+      } else {
+        service.setIncubator('demo-incubator-1');
+        if (service.currentIncubatorId != null) {
+          service.syncTime(service.currentIncubatorId!);
+        }
+      }
     });
   }
 
@@ -33,12 +43,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
         actions: [
           Consumer<IncubatorService>(
             builder: (context, service, child) {
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Icon(
-                  service.isConnected ? Icons.wifi : Icons.wifi_off,
-                  color: service.isConnected ? Colors.green : Colors.red,
-                ),
+              return Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.calendar_month),
+                    tooltip: 'Schedules',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ScheduleScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Icon(
+                      service.isConnected ? Icons.wifi : Icons.wifi_off,
+                      color: service.isConnected ? Colors.green : Colors.red,
+                    ),
+                  ),
+                ],
               );
             },
           ),

@@ -12,10 +12,11 @@
 #include "storage.h"
 #include "automation.h"
 #include "scheduler.h"
+#include "logger.h"
 
 class WebServerManager {
 public:
-    WebServerManager(EnvironmentSensor& sensor, RelayController& relays, ServoController& servo, SettingsManager& settings, AutomationEngine& automation, Scheduler& scheduler);
+    WebServerManager(EnvironmentSensor& sensor, RelayController& relays, ServoController& servo, SettingsManager& settings, AutomationEngine& automation, Scheduler& scheduler, Logger& logger);
     void begin();
     void update(); // Handle WebSocket cleanup if needed
 
@@ -28,6 +29,7 @@ private:
     SettingsManager& _settings;
     AutomationEngine& _automation;
     Scheduler& _scheduler;
+    Logger& _logger;
 
     void setupEndpoints();
     void handleWebSocketMessage(void *arg, uint8_t *data, size_t len);

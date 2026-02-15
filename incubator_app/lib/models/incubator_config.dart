@@ -40,6 +40,34 @@ class IncubatorConfig {
     );
   }
 
+  /// Parses firmware /api/config response (different schema than backend API).
+  factory IncubatorConfig.fromDeviceJson(Map<String, dynamic> json) {
+    final tempMin = (json['tempMin'] as num?)?.toDouble() ?? 37.0;
+    final tempMax = (json['tempMax'] as num?)?.toDouble() ?? 38.0;
+    final humidMin = (json['humidMin'] as num?)?.toDouble() ?? 50.0;
+    final humidMax = (json['humidMax'] as num?)?.toDouble() ?? 65.0;
+
+    final targetTemp = (json['target_temp'] as num?)?.toDouble() ??
+        (tempMin + tempMax) / 2.0;
+    final targetHumidity = (json['target_humidity'] as num?)?.toDouble() ??
+        (humidMin + humidMax) / 2.0;
+    final turnHours = (json['turn_interval_hours'] as num?)?.toInt() ??
+        ((json['turnInterval'] as num?)?.toInt() ?? 240) ~/ 60; // mins to hours
+
+    return IncubatorConfig(
+      id: 'esp32_device',
+      userId: 'default_user',
+      deviceId: null,
+      name: 'My Incubator',
+      eggType: json['egg_type'] as String? ?? 'chicken',
+      hatchDate: null,
+      targetTemp: targetTemp,
+      targetHumidity: targetHumidity,
+      turnIntervalHours: turnHours,
+      createdAt: DateTime.now(),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'name': name,

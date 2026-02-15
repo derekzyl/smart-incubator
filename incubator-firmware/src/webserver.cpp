@@ -1,8 +1,8 @@
 #include "webserver.h"
 #include <SPIFFS.h>
 
-WebServerManager::WebServerManager(EnvironmentSensor& sensor, RelayController& relays, ServoController& servo, SettingsManager& settings, AutomationEngine& automation, Scheduler& scheduler)
-    : server(80), ws("/ws"), _sensor(sensor), _relays(relays), _servo(servo), _settings(settings), _automation(automation), _scheduler(scheduler), lastWsPush(0) {}
+WebServerManager::WebServerManager(EnvironmentSensor& sensor, RelayController& relays, ServoController& servo, SettingsManager& settings, AutomationEngine& automation, Scheduler& scheduler, Logger& logger)
+    : server(80), ws("/ws"), _sensor(sensor), _relays(relays), _servo(servo), _settings(settings), _automation(automation), _scheduler(scheduler), _logger(logger), lastWsPush(0) {}
 
 void WebServerManager::begin() {
     if(!SPIFFS.begin(true)){
@@ -80,7 +80,84 @@ void WebServerManager::setupEndpoints() {
         request->send(200, "application/json", json);
     });
 
-    // ... (Config endpoints unchanged)
+    // API: Config (Get)
+    server.on("/api/config", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        SystemSettings s = _settings.getSettings();
+        JsonDocument doc;
+        doc["tempMin"] = s.tempMin;
+        doc["tempMax"] = s.tempMax;
+        doc["humidMin"] = s.humidMin;
+        doc["humidMax"] = s.humidMax;
+        doc["hysteresis"] = s.hysteresis;
+        doc["useCelsius"] = s.useCelsius;
+        doc["servoExtend"] = s.servoExtendAngle;
+        doc["servoRetract"] = s.servoRetractAngle;
+        doc["turnInterval"] = s.turnIntervalMinutes;
+        
+        // App Compatibility Fields
+        doc["target_temp"] = (s.tempMin + s.tempMax) / 2.0; // Estimate target as midpoint
+        doc["target_humidity"] = (s.humidMin + s.humidMax) / 2.0;
+        doc["turn_interval_hours"] = s.turnIntervalMinutes / 60; // Convert mins to hours
+        
+        String json;
+        serializeJson(doc, json);
+        request->send(200, "application/json", json);
+    });
+
+    // API: Config (Post)
+    AsyncCallbackJsonWebHandler *configHandler = new AsyncCallbackJsonWebHandler("/api/config", [this](AsyncWebServerRequest *request, JsonVariant &json) {
+        JsonObject jsonObj = json.as<JsonObject>();
+        
+        if (jsonObj["tempMin"].is<float>()) _settings.setTempMin(jsonObj["tempMin"]);
+        if (jsonObj["tempMax"].is<float>()) _settings.setTempMax(jsonObj["tempMax"]);
+        if (jsonObj["humidMin"].is<float>()) _settings.setHumidMin(jsonObj["humidMin"]);
+        if (jsonObj["humidMax"].is<float>()) _settings.setHumidMax(jsonObj["humidMax"]);
+        if (jsonObj["hysteresis"].is<float>()) _settings.setHysteresis(jsonObj["hysteresis"]);
+        
+        // App Compatibility (target_temp -> Min/Max)
+        if (jsonObj["target_temp"].is<float>()) {
+             float target = jsonObj["target_temp"];
+             // Default window +- 0.5 degrees
+             _settings.setTempMin(target - 0.5);
+             _settings.setTempMax(target + 0.5);
+        }
+        
+        if (jsonObj["target_humidity"].is<float>()) {
+             float target = jsonObj["target_humidity"];
+             // Default window +- 5%
+             _settings.setHumidMin(target - 5.0);
+             _settings.setHumidMax(target + 5.0);
+        }
+        
+        if (jsonObj["turn_interval_hours"].is<int>()) {
+             int hours = jsonObj["turn_interval_hours"];
+             SystemSettings s = _settings.getSettings();
+             s.turnIntervalMinutes = hours * 60;
+             _settings.saveSettings(s);
+        }
+
+        // New Settings
+        if (jsonObj["servoExtend"].is<int>()) {
+            SystemSettings s = _settings.getSettings();
+            s.servoExtendAngle = jsonObj["servoExtend"];
+            _settings.saveSettings(s);
+        }
+        if (jsonObj["servoRetract"].is<int>()) {
+             SystemSettings s = _settings.getSettings();
+             s.servoRetractAngle = jsonObj["servoRetract"];
+             _settings.saveSettings(s);
+        }
+        if (jsonObj["turnInterval"].is<int>()) {
+             SystemSettings s = _settings.getSettings();
+             s.turnIntervalMinutes = jsonObj["turnInterval"];
+             _settings.saveSettings(s);
+        }
+        
+        
+        Serial.println("API: Config updated.");
+        request->send(200, "application/json", "{\"success\":true}");
+    });
+    server.addHandler(configHandler);
 
     // API: Control (Post)
     AsyncCallbackJsonWebHandler *controlHandler = new AsyncCallbackJsonWebHandler("/api/control", [this](AsyncWebServerRequest *request, JsonVariant &json) {
@@ -102,12 +179,13 @@ void WebServerManager::setupEndpoints() {
         // Servo Control
         if (jsonObj["servo"].is<int>()) _servo.moveToAngle(jsonObj["servo"]);
         if (jsonObj["turnEggs"].is<bool>() && jsonObj["turnEggs"].as<bool>()) {
+             SystemSettings s = _settings.getSettings();
              // Turn Sequence (e.g. Extend then Retract?)
              // For now, toggle state based on current
              if (_servo.getCurrentAngle() < 45) {
-                 _servo.turnEggs(true); // Extend
+                 _servo.turnEggs(true, s.servoExtendAngle, s.servoRetractAngle); // Extend
              } else {
-                 _servo.turnEggs(false); // Retract
+                 _servo.turnEggs(false, s.servoExtendAngle, s.servoRetractAngle); // Retract
              }
         }
         
@@ -174,4 +252,69 @@ void WebServerManager::setupEndpoints() {
             request->send(400, "application/json", "{\"error\":\"Missing id\"}");
         }
     });
+    
+    // API: History (Get)
+    server.on("/api/history", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        String json = _logger.getHistoryJson();
+        request->send(200, "application/json", json); // Directly send array
+    });
+    
+    // API: Analytics (Get)
+    server.on("/api/analytics", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        SystemSettings s = _settings.getSettings();
+        JsonDocument doc;
+        
+        // Mock calculations based on current state
+        // In a real system, we'd analyze history.
+        
+        // Days Remaining
+        int daysRemaining = 21; // Default for chicken
+        if (s.incubationStartDate > 0) {
+             unsigned long now = _sensor.now().unixtime(); // Assuming RTC works
+             long elapsedSeconds = now - s.incubationStartDate;
+             int elapsedDays = elapsedSeconds / 86400;
+             daysRemaining = 21 - elapsedDays;
+             if (daysRemaining < 0) daysRemaining = 0;
+        }
+        
+        doc["predicted_success_rate"] = 0.85; // Mock
+        doc["days_remaining"] = daysRemaining;
+        
+        // Scores (Mock based on current deviation)
+        float currentTemp = _sensor.getTemperature();
+        float tempDiff = abs(currentTemp - s.tempMin);
+        int tempScore = 100 - (tempDiff * 10);
+        if (tempScore < 0) tempScore = 0;
+        
+        float currentHumid = _sensor.getHumidity();
+        float humidDiff = abs(currentHumid - s.humidMin);
+        int humidScore = 100 - (humidDiff * 2);
+        if (humidScore < 0) humidScore = 0;
+
+        doc["temp_stability_score"] = tempScore;
+        doc["humidity_score"] = humidScore;
+        doc["turn_compliance"] = 100; // Mock
+        
+        JsonArray recs = doc.createNestedArray("recommendations");
+        if (tempScore < 80) recs.add("Check Heater/Fan");
+        if (humidScore < 80) recs.add("Check Water Level");
+        if (recs.size() == 0) recs.add("System Optimal");
+        
+        String json;
+        serializeJson(doc, json);
+        request->send(200, "application/json", json);
+    });
+
+    // API: Time Sync (Post)
+    AsyncCallbackJsonWebHandler *timeHandler = new AsyncCallbackJsonWebHandler("/api/time", [this](AsyncWebServerRequest *request, JsonVariant &json) {
+        JsonObject jsonObj = json.as<JsonObject>();
+        if (jsonObj["epoch"].is<unsigned long>()) {
+            unsigned long epoch = jsonObj["epoch"];
+            _sensor.setTime(epoch);
+            request->send(200, "application/json", "{\"success\":true}");
+        } else {
+            request->send(400, "application/json", "{\"error\":\"Missing epoch\"}");
+        }
+    });
+    server.addHandler(timeHandler);
 }

@@ -14,6 +14,7 @@ class DirectIncubatorService extends IncubatorService {
   String _baseUrl = 'http://192.168.4.1'; // Default AP IP or placeholder
   final bool _isLoading = false;
   SensorData? _latestSensorData;
+  IncubatorConfig? _deviceConfig;
   Timer? _pollingTimer;
   bool _isConnected = false;
 
@@ -23,7 +24,7 @@ class DirectIncubatorService extends IncubatorService {
   @override
   SensorData? get latestSensorData => _latestSensorData;
   @override
-  IncubatorConfig? get config => null;
+  IncubatorConfig? get config => _deviceConfig;
   @override
   List<Alert> get alerts => [];
   @override
@@ -138,13 +139,47 @@ class DirectIncubatorService extends IncubatorService {
     super.dispose();
   }
 
-  // Stubs for compatibility with existing UI calls
+  // Config sync with device
   @override
   Future<void> setIncubator(String id) async {}
+
   @override
-  Future<void> loadConfig(String id) async {}
+  Future<void> loadConfig(String id) async {
+    try {
+      final response = await http
+          .get(Uri.parse('$_baseUrl/api/config'))
+          .timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        _deviceConfig = IncubatorConfig.fromDeviceJson(data);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error loading config: $e');
+    }
+  }
+
   @override
-  Future<void> updateConfig(String id, IncubatorConfig config) async {}
+  Future<void> updateConfig(String id, IncubatorConfig config) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/config'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(config.toJson()),
+      ).timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        await loadConfig(id);
+        notifyListeners();
+      } else {
+        debugPrint('Config update failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Error updating config: $e');
+      rethrow;
+    }
+  }
   @override
   Future<List<Map<String, dynamic>>> getHistory(
     String id,
