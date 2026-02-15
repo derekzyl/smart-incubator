@@ -19,7 +19,7 @@
 #define PIN_SERVO           18
 #define DEFAULT_SERVO_RETRACT 0
 #define DEFAULT_SERVO_EXTEND  170 // Increased from 90 per user request
-#define DEFAULT_TURN_INTERVAL 60 // Minutes
+#define DEFAULT_TURN_INTERVAL 240 // Minutes (4 hours for chicken eggs)
 
 
 // Buttons

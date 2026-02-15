@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/alert.dart';
 import '../models/incubator_config.dart';
+import '../models/schedule.dart';
 import '../models/sensor_data.dart';
 import '../services/incubator_service.dart';
 
@@ -180,6 +181,60 @@ class DirectIncubatorService extends IncubatorService {
       rethrow;
     }
   }
+  // Schedule API - use baseUrl (device IP) instead of currentIncubatorId
+  @override
+  Future<List<Schedule>> getSchedules(String id) async {
+    try {
+      final response = await http
+          .get(Uri.parse('$_baseUrl/api/schedule'))
+          .timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((e) => Schedule.fromJson(e)).toList();
+      }
+    } catch (e) {
+      debugPrint('Error loading schedules: $e');
+    }
+    return [];
+  }
+
+  @override
+  Future<void> addSchedule(String id, Schedule schedule) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/schedule'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(schedule.toJson()),
+      ).timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        notifyListeners();
+      } else {
+        debugPrint('Add schedule failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Error adding schedule: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteSchedule(String id, int scheduleId) async {
+    try {
+      final response = await http
+          .delete(Uri.parse('$_baseUrl/api/schedule?id=$scheduleId'))
+          .timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        notifyListeners();
+      } else {
+        debugPrint('Delete schedule failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Error deleting schedule: $e');
+    }
+  }
+
   @override
   Future<List<Map<String, dynamic>>> getHistory(
     String id,
